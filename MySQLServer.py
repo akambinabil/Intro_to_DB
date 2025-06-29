@@ -1,4 +1,5 @@
 import mysql.connector
+from mysql.connector import Error
 
 def create_database():
     connection = None
@@ -6,24 +7,19 @@ def create_database():
         # Connect to MySQL server without specifying a database
         connection = mysql.connector.connect(
             host='localhost',
-            user='root',    # Replace with your MySQL username
-            password=''     # Replace with your MySQL password
+            user='root',  # Replace with your MySQL username
+            password=''   # Replace with your MySQL password
         )
         
         if connection.is_connected():
             cursor = connection.cursor()
             
-            # Create database without checking if it exists first (no SELECT/SHOW needed)
-            try:
-                cursor.execute("CREATE DATABASE alx_book_store")
-                print("Database 'alx_book_store' created successfully!")
-            except mysql.connector.Error as e:
-                if e.errno == 1007:  # Database already exists error code
-                    print("Database 'alx_book_store' already exists.")
-                else:
-                    raise
+            # Create database if it doesn't exist (without using SHOW or SELECT)
+            cursor.execute("CREATE DATABASE IF NOT EXISTS alx_book_store")
             
-    except mysql.connector.Error as e:
+            print("Database 'alx_book_store' created successfully!")
+            
+    except mysql.connector.Error as e:  # Specifically catching mysql.connector.Error
         print(f"Error while connecting to MySQL: {e}")
     finally:
         if connection and connection.is_connected():
